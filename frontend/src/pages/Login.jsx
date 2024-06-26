@@ -27,7 +27,7 @@ const LoginPage = () => {
       /* Get data after fetching */
       const loggedIn = await response.json()
 
-      if (loggedIn) {
+      if (loggedIn.token && loggedIn.token !== "") {
         dispatch (
           setLogin({
             user: loggedIn.user,
@@ -38,7 +38,7 @@ const LoginPage = () => {
       }
 
     } catch (err) {
-      console.log("Login failed", err.message)
+      console.log("Login failed: ", err.message)
     }
   }
 
