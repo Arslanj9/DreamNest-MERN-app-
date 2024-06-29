@@ -12,13 +12,16 @@ const Navbar = () => {
 
   const user = useSelector((state) => state.user);
 
-  console.log(user.profileImagePath)
-
   const dispatch = useDispatch();
 
   const [search, setSearch] = useState("")
 
   const navigate = useNavigate()
+
+
+  // console.log(user)
+
+  
 
   return (
     <div className="navbar">
@@ -33,10 +36,10 @@ const Navbar = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <IconButton disabled={search === ""}>
+        <IconButton disabled={search === ""} onClick={() => {navigate(`/properties/search/${search}`)}}>
           <Search
             sx={{ color: "#F8395A" }}
-            onClick={() => {navigate(`/properties/search/${search}`)}}
+            
           />
         </IconButton>
       </div>
@@ -61,10 +64,7 @@ const Navbar = () => {
             <Person sx={{ color: "#969393" }} />
           ) : (
             <img
-              src={`http://localhost:3001/${user.profileImagePath.replace(
-                "public",
-                ""
-              )}`}
+              src={`http://localhost:3001/${user.profileImagePath.replace(/\\/g, '/').replace('public/', '')}`}
               alt="profile photo"
               style={{ objectFit: "cover", borderRadius: "50%" }}
             />
