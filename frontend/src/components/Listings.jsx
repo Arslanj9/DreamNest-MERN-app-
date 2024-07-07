@@ -7,14 +7,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { setListings } from "../redux/state";
 
 const Listings = () => {
-  const dispatch = useDispatch();
+
+  // STATES
   const [loading, setLoading] = useState(true);
-
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);   // Pagination
+  const itemsPerPage = 4; // Pagination - Adjust this as needed
 
+  // Redux
+  const dispatch = useDispatch();
   const listings = useSelector((state) => state.listings);
 
-  console.log("Lisitigns data" ,listings)
+
+  // Console.log
+  console.log("Lisitigns data", listings)
+
+
 
   const getFeedListings = async () => {
     try {
@@ -40,6 +48,25 @@ const Listings = () => {
     getFeedListings();
   }, [selectedCategory]);
 
+
+
+  //                   <------ Pagination ------>  
+  // Calculate the indices of the items to be shown on the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = listings.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(listings.length / itemsPerPage);
+
+  // Function to change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+
+
+
+
+
   return (
     <>
       <div className="category-list">
@@ -47,7 +74,10 @@ const Listings = () => {
           <div
             className={`category ${category.label === selectedCategory ? "selected" : ""}`}
             key={index}
-            onClick={() => setSelectedCategory(category.label)}
+            onClick={() => {
+              setSelectedCategory(category.label)
+              setCurrentPage(1); // Reset to first page on category change
+            }}
           >
             <div className="category_icon">{category.icon}</div>
             <p>{category.label}</p>
@@ -55,11 +85,13 @@ const Listings = () => {
         ))}
       </div>
 
+
+
       {loading ? (
         <Loader />
       ) : (
         <div className="listings">
-          {listings.map(
+          {currentItems.map(
             ({
               _id,
               creator,
@@ -70,7 +102,7 @@ const Listings = () => {
               category,
               type,
               price,
-              booking=false
+              booking = false
             }) => (
               <ListingCard
                 listingId={_id}
@@ -88,6 +120,19 @@ const Listings = () => {
           )}
         </div>
       )}
+
+
+      <div className="pagination">
+        {[...Array(totalPages).keys()].map((number) => (
+          <button
+            key={number + 1}
+            onClick={() => paginate(number + 1)}
+            className={currentPage === number + 1 ? "active" : ""}
+          >
+            {number + 1}
+          </button>
+        ))}
+      </div>
     </>
   );
 };
